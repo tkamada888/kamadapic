@@ -1,60 +1,85 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
+  <div class="corpo">
+    <h1 class="centralizado">{{ titulo }}</h1>
+
+    <ul class="lista-fotos">
+      <li class="lista-fotos-item" v-for="foto in fotos" :key="foto.titulo">
+        <meu-painel :titulo="foto.titulo">
+          <img class="imagem-responsiva" :src="foto.url" :alt="foto.titulo" />
+        </meu-painel>
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
+import Painel from "./components/shared/painel/Painel.vue";
+
 export default {
-  name: 'app',
-  data () {
+  components: {
+    "meu-painel": Painel,
+  },
+
+  data() {
     return {
-      msg: 'Welcome to Your Vue.js App'
-    }
-  }
-}
+      titulo: "KamadaPic",
+      fotos: [],
+    };
+  },
+
+  created() {
+    this.$http
+      .get("http://localhost:3000/v1/fotos")
+      .then((res) => res.json())
+      .then(
+        (fotos) => (this.fotos = fotos),
+        (err) => console.log(err)
+      );
+  },
+};
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.centralizado {
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 
-h1, h2 {
-  font-weight: normal;
+.imagem-responsiva {
+  width: 100%;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+.corpo {
+  font-family: Helvetica, sans-serif;
+  margin: 0 auto;
+  width: 96%;
 }
 
-li {
+.lista-fotos {
+  list-style: none;
+}
+
+.lista-fotos .lista-fotos-item {
   display: inline-block;
-  margin: 0 10px;
 }
 
-a {
-  color: #42b983;
+.painel {
+  padding: 0 auto;
+  border: solid 2px grey;
+  display: inline-block;
+  margin: 5px;
+  box-shadow: 5px 5px 10px grey;
+  width: 200px;
+  height: 100%;
+  vertical-align: top;
+  text-align: center;
+}
+
+.painel .painel-titulo {
+  text-align: center;
+  border: solid 2px;
+  background: lightblue;
+  margin: 0 0 15px 0;
+  padding: 10px;
+  text-transform: uppercase;
 }
 </style>
