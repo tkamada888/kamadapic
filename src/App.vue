@@ -1,85 +1,89 @@
+
+<!-- alurapic/src/App.vue -->
+
 <template>
   <div class="corpo">
+
     <h1 class="centralizado">{{ titulo }}</h1>
 
+    <input type="search" class="filtro" @input="filtro = $event.target.value" placeholder="filtre pelo título da foto">
+
     <ul class="lista-fotos">
-      <li class="lista-fotos-item" v-for="foto in fotos" :key="foto.titulo">
+      <li class="lista-fotos-item" v-for="foto of fotosComFiltro" :key="foto.titulo">
         <meu-painel :titulo="foto.titulo">
-          <img class="imagem-responsiva" :src="foto.url" :alt="foto.titulo" />
+          <imagem-responsiva :url="foto.url" :titulo="foto.titulo"/>
         </meu-painel>
       </li>
     </ul>
+
   </div>
 </template>
 
 <script>
-import Painel from "./components/shared/painel/Painel.vue";
+
+import Painel from './components/shared/painel/Painel.vue';
+import ImagemResponsiva from './components/shared/imagem-responsiva/ImagemResponsiva.vue'
 
 export default {
+
   components: {
-    "meu-painel": Painel,
+
+    'meu-painel': Painel,
+    'imagem-responsiva': ImagemResponsiva
   },
 
-  data() {
+  data () {
     return {
-      titulo: "KamadaPic",
+      titulo: 'Alurapic', 
+
       fotos: [],
-    };
+
+      filtro: ''
+    }
+  },
+
+  computed: {
+    fotosComFiltro() {
+      if (this.filtro) {
+        let exp = new RegExp(this.filtro.trim(), 'i');
+        return this.fotos.filter(foto => exp.test(foto.titulo));
+      } else {
+        return this.fotos;
+      }
+    }
   },
 
   created() {
+
     this.$http
-      .get("http://localhost:3000/v1/fotos")
-      .then((res) => res.json())
-      .then(
-        (fotos) => (this.fotos = fotos),
-        (err) => console.log(err)
-      );
-  },
-};
+      .get('http://localhost:3000/v1/fotos')
+      .then(res => res.json())
+      .then(fotos => this.fotos = fotos);
+  }
+}
 </script>
-
 <style>
-.centralizado {
-  text-align: center;
-}
 
-.imagem-responsiva {
-  width: 100%;
-}
+  .centralizado {
+    text-align: center;
+  }
 
-.corpo {
-  font-family: Helvetica, sans-serif;
-  margin: 0 auto;
-  width: 96%;
-}
+  .corpo {
+    font-family: Helvetica, sans-serif;
+    margin: 0 auto;
+    width: 96%;
+  }
 
-.lista-fotos {
-  list-style: none;
-}
+  .lista-fotos {
+    list-style: none;
+  }
 
-.lista-fotos .lista-fotos-item {
-  display: inline-block;
-}
+  .lista-fotos .lista-fotos-item {
+    display: inline-block;
+  }
 
-.painel {
-  padding: 0 auto;
-  border: solid 2px grey;
-  display: inline-block;
-  margin: 5px;
-  box-shadow: 5px 5px 10px grey;
-  width: 200px;
-  height: 100%;
-  vertical-align: top;
-  text-align: center;
-}
-
-.painel .painel-titulo {
-  text-align: center;
-  border: solid 2px;
-  background: lightblue;
-  margin: 0 0 15px 0;
-  padding: 10px;
-  text-transform: uppercase;
-}
+  .filtro {
+    display: block;
+    width: 100%;
+  }
 </style>
